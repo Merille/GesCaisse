@@ -1,0 +1,69 @@
+﻿@model EasytransitCaisse.Models.Caisse
+
+<div class="container mt-4">
+
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Créer une Caisse</h4>
+        </div>
+
+        <div class="card-body">
+
+            <form method="post">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Code Caisse</label>
+                        <input name="ChkCode" class="form-control" placeholder="Ex: CASH01" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Description</label>
+                        <input name="ChkDescription" class="form-control" placeholder="Caisse principale" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">StCode</label>
+                        <input name="StCode" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Caissier par défaut</label>
+
+                        <select name="CashierDefault" class="form-select">
+                            <option value="">-- Choisir un caissier --</option>
+
+                            @foreach (var user in ViewBag.Users)
+                            {
+                                <option value="@user.Value">
+                                    @user.Text
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Client par défaut</label>
+                        <input name="CustomerDefaultCode" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Journal</label>
+                        <input name="JournalDefaultCode" class="form-control" />
+                    </div>
+
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-success">
+                        Enregistrer
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>

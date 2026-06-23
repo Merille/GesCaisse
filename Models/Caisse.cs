@@ -1,0 +1,21 @@
+﻿namespace EasytransitCaisse.Models
+{
+    public class Caisse
+    {
+        public int ID { get; set; } // Identity
+
+        public string ChkCode { get; set; }
+
+        public string ChkDescription { get; set; }
+
+        public string StCode { get; set; }
+
+        public int? SalesPersonDefault { get; set; }
+
+        public int? CashierDefault { get; set; }
+
+        public string CustomerDefaultCode { get; set; }
+
+        public string JournalDefaultCode { get; set; }
+    }
+}

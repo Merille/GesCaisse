@@ -1,0 +1,111 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Facture</title>
+
+    <style>
+            body {
+                font-family: Arial;
+                font-size: 13px;
+            }
+
+            .header {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            .info {
+                margin-bottom: 20px;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            th {
+                background: #333;
+                color: white;
+                padding: 8px;
+            }
+
+            td {
+                padding: 6px;
+                border-bottom: 1px solid #ddd;
+            }
+
+            .total {
+                text-align: right;
+                font-weight: bold;
+            }
+    </style>
+</head>
+
+<body>
+    @Html.Raw(System.Net.WebUtility.HtmlDecode(@"
+        <div style='display:flex; justify-content:space-between; margin-bottom:20px;'>
+
+            <div>
+                <h3 style='margin:0;'>EASYTRANSIT CAISSE</h3>
+                <p style='margin:0;'>BP : 1234</p>
+                <p style='margin:0;'>Tel : +242 06 000 0000</p>
+                <p style='margin:0;'>Email : contact@easytransit.com</p>
+            </div>
+
+            <div style='text-align:right;'>
+                <h4 style='margin:0;'>RÉPUBLIQUE GABONAISE</h4>
+                <p style='margin:0;'>Union - Travail - Justice</p>
+            </div>
+
+        </div>
+        <hr />
+        "))
+    <div class="header">
+        <h2>FACTURE</h2>
+        <h4>N° @Model.Numero</h4>
+    </div>
+
+    <div class="info">
+        <p><b>Date :</b> @Model.DateFacture.ToString("dd/MM/yyyy")</p>
+        <p><b>Statut :</b> @Model.Statut</p>
+        <p><b>Client :</b> @Model.ClientId</p>
+    </div>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Désignation</th>
+                <th>Qté</th>
+                <th>PU</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            @foreach (var l in ViewBag.Lignes)
+            {
+                <tr>
+                    <td>@l.Designation</td>
+                    <td>@l.Quantite</td>
+                    <td>@l.PrixUnitaire</td>
+                    <td>@l.TotalLigne</td>
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+
+    <br />
+
+    <div class="total">
+        <p>HT : @Model.MontantHT</p>
+        <p>TVA : @Model.MontantTVA</p>
+        <p>TTC : @Model.MontantTTC</p>
+    </div>
+
+</body>
+</html>

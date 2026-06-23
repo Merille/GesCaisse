@@ -1,0 +1,53 @@
+﻿@model List<EasytransitCaisse.Models.Client>
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between mb-3">
+        <h3>Clients</h3>
+
+        <a href="/Client/Create" class="btn btn-primary">
+            + Nouveau client
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Code</th>
+                    <th>Société</th>
+                    <th>Contact</th>
+                    <th>Téléphone</th>
+                    <th width="180">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var c in Model)
+                {
+                    <tr>
+                        <td>@c.CodeClient</td>
+                        <td class="fw-semibold">@c.NomSociete</td>
+                        <td>@c.NomContact</td>
+                        <td>@c.Telephone</td>
+
+                        <td>
+                            <a href="/Client/Edit/@c.Id" class="btn btn-warning btn-sm">
+                                Modifier
+                            </a>
+
+                            <a href="/Client/Delete/@c.Id"
+                                   class="btn btn-danger btn-sm"
+                                   onclick="return confirm('Supprimer ce client ?')">
+                                Supprimer
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+
+    </div>
+</div>

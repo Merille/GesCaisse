@@ -1,0 +1,52 @@
+﻿@model List<EasytransitCaisse.Models.Facture>
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between mb-3">
+        <h3>Factures</h3>
+
+        <a href="/Facture/Create"
+               class="btn btn-primary">
+            Nouvelle facture
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+
+        <table class="table table-hover mb-0">
+
+            <thead class="table-dark">
+                <tr>
+                    <th>Numéro</th>
+                    <th>Date</th>
+                    <th>Montant TTC</th>
+                    <th>Statut</th>
+                    <th width="120">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Numero</td>
+                        <td>@item.DateFacture.ToShortDateString()</td>
+                        <td>@item.MontantTTC.ToString("N0")</td>
+                        <td>@item.Statut</td>
+                        <td>
+                            <a href="/Facture/Edit/@item.Id"
+                                   class="btn btn-primary btn-sm">
+                                Ouvrir
+                            </a>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

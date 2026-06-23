@@ -1,0 +1,53 @@
+﻿@model EasytransitCaisse.Models.Utilisateur
+
+<div class="container mt-4">
+
+    <div class="card shadow-lg">
+
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Créer un utilisateur</h4>
+        </div>
+
+        <div class="card-body">
+
+            <form method="post">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Nom utilisateur</label>
+                        <input name="NomUtilisateur" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Nom complet</label>
+                        <input name="NomComplet" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Profil</label>
+                        <select name="Profil" class="form-select">
+                            <option value="Admin">Admin</option>
+                            <option value="Caissier">Caissier</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Mot de passe</label>
+                        <input type="password" name="MotPasse" class="form-control" />
+                    </div>
+
+                </div>
+
+                <div class="text-end">
+                    <button class="btn btn-success">
+                        Enregistrer
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>

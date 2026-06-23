@@ -1,0 +1,106 @@
+﻿@model EasytransitCaisse.Models.Caisse
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+
+            <div class="d-flex justify-content-between">
+
+                <h4>
+                    @Model.ChkCode - @Model.ChkDescription
+                </h4>
+                <a href="/JourneeCaisse/PrintJournees?caisseId=@Model.ID"
+                       class="btn btn-dark">
+                    Imprimer PDF
+                </a>
+                <a href="/JourneeCaisse/Create/@Model.ID"
+                       class="btn btn-success">
+                    Nouvelle journée
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="card-body p-0">
+
+            <table class="table table-hover mb-0">
+
+                <thead class="table-dark">
+
+                    <tr>
+                        <th>Date</th>
+                        <th>Initial</th>
+                        <th>Encaisse</th>
+                        <th>Décaisse</th>
+                        <th>Solde</th>
+                        <th>Statut</th>
+                        <th width="180">Action</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach (var j in ViewBag.Journees)
+                    {
+                        <tr>
+
+                            <td>
+                                @j.DateJournee.ToString("dd/MM/yyyy")
+                            </td>
+
+                            <td>
+                                @j.Initial.ToString("N0")
+                            </td>
+
+                            <td class="text-success fw-bold">
+                                @j.Encaisse.ToString("N0")
+                            </td>
+
+                            <td class="text-danger fw-bold">
+                                @j.Decaisse.ToString("N0")
+                            </td>
+
+                            <td class="fw-bold">
+                                @j.Solde.ToString("N0")
+                            </td>
+                            <td>
+                                @if (j.Statut == "Ouverte")
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-lock-open"></i> Ouverte
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-lock"></i> Clôturée
+                                    </span>
+                                }
+                            </td>
+                            <td>
+
+                                <a href="/JourneeCaisse/Details/@j.JourneeId"
+                                       class="btn btn-primary btn-sm">
+
+                                    Consulter
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

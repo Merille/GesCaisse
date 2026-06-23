@@ -1,0 +1,59 @@
+﻿@model EasytransitCaisse.Models.Utilisateur
+
+<div class="container mt-4">
+
+    <div class="card shadow-lg">
+
+        <div class="card-header bg-warning">
+            <h4 class="mb-0">Modifier utilisateur</h4>
+        </div>
+
+        <div class="card-body">
+
+            <form method="post">
+
+                <input type="hidden" name="Id" value="@Model.Id" />
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Nom utilisateur</label>
+                        <input name="NomUtilisateur"
+                               value="@Model.NomUtilisateur"
+                               class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Nom complet</label>
+                        <input name="NomComplet"
+                               value="@Model.NomComplet"
+                               class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Profil</label>
+                        <select name="Profil" class="form-select">
+                            <option value="Admin" selected="@(Model.Profil == "Admin")">Admin</option>
+                            <option value="Caissier" selected="@(Model.Profil == "Caissier")">Caissier</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Mot de passe (optionnel)</label>
+                        <input type="password" name="MotPasse" class="form-control" />
+                    </div>
+
+                </div>
+
+                <div class="text-end">
+                    <button class="btn btn-primary">
+                        Modifier
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>

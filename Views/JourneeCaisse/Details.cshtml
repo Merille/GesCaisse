@@ -1,0 +1,265 @@
+﻿@model EasytransitCaisse.Models.JourneeCaisse
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between mb-3">
+
+        <h4>
+            Journée @Model.NumeroJournee
+        </h4>
+
+        <div>
+
+            @if (Model.Statut == "Ouverte")
+            {
+                <form method="post"
+                      asp-action="Cloturer"
+                      style="display:inline;">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button class="btn btn-warning btn-sm">
+                        Clôturer
+                    </button>
+                </form>
+            }
+
+            <form method="post"
+                  asp-action="Supprimer"
+                  style="display:inline;">
+                <input type="hidden" name="id" value="@Model.Id" />
+                <button class="btn btn-danger btn-sm"
+                        onclick="return confirm('Supprimer cette journée ?')">
+                    Supprimer
+                </button>
+            </form>
+
+        </div>
+
+    </div>
+
+    <div class="card shadow-lg">
+
+        <div class="card-header bg-primary text-white">
+
+            <h4>
+                Journée @Model.NumeroJournee
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-3">
+
+                    <div class="card border-primary">
+                        <div class="card-body text-center">
+                            <h6>Initial</h6>
+                            <h3>@Model.SoldeInitial.ToString("N0")</h3>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <div class="card border-success">
+                        <div class="card-body text-center">
+                            <h6>Encaissements</h6>
+                            <h3>@ViewBag.TotalEncaisse.ToString("N0")</h3>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <div class="card border-danger">
+                        <div class="card-body text-center">
+                            <h6>Décaissements</h6>
+                            <h3>@ViewBag.TotalDecaisse.ToString("N0")</h3>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <div class="card border-dark">
+                        <div class="card-body text-center">
+                            <h6>Solde Actuel</h6>
+                            <h3>@ViewBag.SoldeActuel.ToString("N0")</h3>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    <div class="card shadow-lg mt-4">
+        @if (Model.Statut == "Cloturee")
+        {
+            <div class="alert alert-danger">
+                Cette journée est clôturée. Aucune opération possible.
+            </div>
+        }
+        else
+        {
+            <!-- formulaire normal -->
+            <div class="card-header bg-success text-white">
+                Nouvelle opération
+            </div>
+
+            <div class="card-body">
+
+                <form method="post"
+                      asp-action="AjouterOperation">
+
+                    <input type="hidden"
+                           name="journeeId"
+                           value="@Model.Id" />
+
+                    <div class="row">
+
+                        <div class="col-md-3">
+                            <label>Type</label>
+
+                            <select name="typeOperation"
+                                    class="form-select">
+
+                                <option value="Encaissement">
+                                    Encaissement
+                                </option>
+
+                                <option value="Décaissement">
+                                    Décaissement
+                                </option>
+
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label>Client</label>
+
+                            <select name="clientId"
+                                    class="form-select">
+
+                                <option value="">
+                                    Aucun
+                                </option>
+
+                                @foreach (var c in ViewBag.Clients)
+                                {
+                                    <option value="@c.Id">
+                                        @c.NomSociete
+                                    </option>
+                                }
+
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label>Montant</label>
+
+                            <input name="montant"
+                                   type="number"
+                                   step="0.01"
+                                   class="form-control" />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Libellé</label>
+
+                            <input name="libelle"
+                                   class="form-control" />
+                        </div>
+
+                    </div>
+
+                    <div class="text-end mt-3">
+
+                        <button class="btn btn-success">
+                            Enregistrer
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+        }
+    </div>
+
+    <div class="card shadow-lg mt-4">
+
+        <div class="card-header bg-dark text-white">
+            Historique des opérations
+        </div>
+
+        <div class="card-body p-0">
+            <a href="/JourneeCaisse/PrintOperations?journeeId=@Model.Id"
+                   class="btn btn-dark">
+                Imprimer opérations
+            </a>
+            <table class="table table-hover mb-0">
+
+                <thead>
+
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Libellé</th>
+                        <th>Montant</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach (var op in ViewBag.Operations)
+                    {
+                        <tr>
+
+                            <td>
+                                @op.DateOperation.ToString("dd/MM/yyyy HH:mm")
+                            </td>
+
+                            <td>
+
+                                @if (op.TypeOperation == "Encaissement")
+                                {
+                                    <span class="badge bg-success">
+                                        Encaissement
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">
+                                        Décaissement
+                                    </span>
+                                }
+
+                            </td>
+
+                            <td>
+                                @op.Libelle
+                            </td>
+
+                            <td>
+                                @op.Montant.ToString("N0")
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,85 @@
+﻿@model EasytransitCaisse.Models.Client
+
+<div class="container mt-4">
+
+    <div class="card shadow-lg">
+
+        <div class="card-header bg-primary text-white">
+            <h4>Créer un client</h4>
+        </div>
+
+        <div class="card-body">
+
+            <form method="post" asp-action="Create" asp-controller="Client">
+
+                <h5 class="mb-3">🏢 Société</h5>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label>Code client</label>
+                        <input name="CodeClient" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Nom société</label>
+                        <input name="NomSociete" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Adresse</label>
+                        <input name="Adresse" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Téléphone</label>
+                        <input name="Telephone" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Email</label>
+                        <input name="Email" class="form-control" />
+                    </div>
+
+                </div>
+
+                <hr />
+
+                <h5 class="mb-3">👤 Interlocuteur</h5>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label>Nom contact</label>
+                        <input name="NomContact" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Fonction</label>
+                        <input name="FonctionContact" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Téléphone contact</label>
+                        <input name="TelephoneContact" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Email contact</label>
+                        <input name="EmailContact" class="form-control" />
+                    </div>
+
+                </div>
+
+                <div class="text-end">
+                    <button class="btn btn-success">
+                        Enregistrer
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>

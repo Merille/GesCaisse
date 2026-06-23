@@ -1,0 +1,78 @@
+﻿@model EasytransitCaisse.Models.Client
+
+<div class="container mt-4">
+
+    <div class="card shadow-lg">
+
+        <div class="card-header bg-warning">
+            <h4>Modifier client</h4>
+        </div>
+
+        <div class="card-body">
+
+            <form method="post">
+
+                <input type="hidden" name="Id" value="@Model.Id" />
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label>Code client</label>
+                        <input name="CodeClient" value="@Model.CodeClient" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Nom société</label>
+                        <input name="NomSociete" value="@Model.NomSociete" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Adresse</label>
+                        <input name="Adresse" value="@Model.Adresse" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Téléphone</label>
+                        <input name="Telephone" value="@Model.Telephone" class="form-control" />
+                    </div>
+
+                </div>
+
+                <hr />
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label>Nom contact</label>
+                        <input name="NomContact" value="@Model.NomContact" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Fonction</label>
+                        <input name="FonctionContact" value="@Model.FonctionContact" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Téléphone contact</label>
+                        <input name="TelephoneContact" value="@Model.TelephoneContact" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Email contact</label>
+                        <input name="EmailContact" value="@Model.Email" class="form-control" />
+                    </div>
+
+                </div>
+
+                <div class="text-end">
+                    <button class="btn btn-primary">
+                        Modifier
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,90 @@
+﻿<div class="card p-3 mb-3">
+
+    <div class="row">
+
+        <div class="col-md-3">
+            <label>Date début</label>
+            <input type="date" id="dateDebut" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+            <label>Date fin</label>
+            <input type="date" id="dateFin" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+            <label>Type</label>
+            <select id="type" class="form-control">
+                <option value="">Tous</option>
+                <option value="Encaissement">Encaissement</option>
+                <option value="Décaissement">Décaissement</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label>Caisse</label>
+            <select id="caisseId" class="form-control">
+                <option value="">Toutes</option>
+                @foreach (var c in ViewBag.Caisses)
+                {
+                    <option value="@c.ID">@c.ChkDescription</option>
+                }
+            </select>
+        </div>
+
+    </div>
+
+    <button class="btn btn-primary mt-3" onclick="loadData()">
+        Rechercher
+    </button>
+
+</div>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Caisse</th>
+            <th>Type</th>
+            <th>Montant</th>
+            <th>Libellé</th>
+        </tr>
+    </thead>
+
+    <tbody id="resultats">
+    </tbody>
+</table>
+
+
+<script>
+    
+    function loadData() {
+        alert("JS chargé !");
+        let dateDebut = document.getElementById("dateDebut").value;
+        let dateFin = document.getElementById("dateFin").value;
+        let type = document.getElementById("type").value;
+        let caisseId = document.getElementById("caisseId").value;
+
+        fetch(`/Rapport/GetOperations?dateDebut=${dateDebut}&dateFin=${dateFin}&type=${type}&caisseId=${caisseId}`)
+            .then(response => response.json())
+            .then(data => {
+
+                let rows = "";
+
+                data.forEach(item => {
+
+                    rows += `
+                        <tr>
+                            <td>${new Date(item.dateOperation).toLocaleDateString()}</td>
+                            <td>${item.caisse}</td>
+                            <td>${item.typeOperation}</td>
+                            <td>${item.montant}</td>
+                            <td>${item.libelle ?? ''}</td>
+                        </tr>
+                    `;
+                });
+
+                document.getElementById("resultats").innerHTML = rows;
+            });
+    }
+</script>

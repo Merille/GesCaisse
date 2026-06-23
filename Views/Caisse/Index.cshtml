@@ -1,0 +1,63 @@
+﻿@model List<EasytransitCaisse.Models.CaisseViewModel>
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold">Gestion des Caisses</h3>
+        <a href="/Caisse/PrintCaisses"
+               class="btn btn-dark">
+            Imprimer PDF
+        </a>
+        <a href="/Caisse/Create" class="btn btn-primary">
+            + Nouvelle Caisse
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+
+        <table class="table table-hover align-middle mb-0">
+
+            <thead class="table-dark">
+                <tr>
+                    <th>Code</th>
+                    <th>Description</th>
+                    <th>StCode</th>
+                    <th>Caissier par défaut</th>
+                    <th width="280">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@item.ChkCode</td>
+                        <td>@item.ChkDescription</td>
+                        <td>@item.StCode</td>
+                        <td>
+                            <span class="badge bg-info text-dark">
+                                @item.CashierName
+                            </span>
+                        </td>
+                        <td>
+                            <a href="/Caisse/Details/@item.ID"
+                                   class="btn btn-success btn-sm">
+                                Ouvrir
+                            </a>
+                            <a href="/Caisse/Edit/@item.ID" class="btn btn-warning btn-sm">
+                                Modifier
+                            </a>
+
+                            <a href="/Caisse/Delete/@item.ID"
+                                   class="btn btn-danger btn-sm">
+                                Supprimer
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+
+    </div>
+</div>

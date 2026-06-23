@@ -1,0 +1,53 @@
+﻿@model List<EasytransitCaisse.Models.OperationCaisse>
+    @{
+    Layout = "_PdfLayout";
+}
+<style>
+    body { font-family: Arial; }
+    table { border-collapse: collapse; }
+    th { background: #333; color: white; }
+</style>
+<div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+
+    <!-- Gauche -->
+    <div>
+        <h3 style="margin:0;">EASYTRANSIT CAISSE</h3>
+        <p style="margin:0;">BP : 1234</p>
+        <p style="margin:0;">Tel : +242 06 000 0000</p>
+        <p style="margin:0;">Email : contact@easytransit.com</p>
+    </div>
+
+    <!-- Droite -->
+    <div style="text-align:right;">
+        <h4 style="margin:0;">
+            RÉPUBLIQUE GABONAISE
+        </h4>
+        <p style="margin:0;">Union - Travail - Justice</p>
+    </div>
+
+</div>
+
+<hr />
+
+<h2>Opérations de Caisse</h2>
+
+<table border="1" width="100%" cellpadding="5">
+
+    <tr>
+        <th>Date</th>
+        <th>Type</th>
+        <th>Libellé</th>
+        <th>Montant</th>
+    </tr>
+
+    @foreach (var o in Model)
+    {
+        <tr>
+            <td>@o.DateOperation.ToString("dd/MM/yyyy HH:mm")</td>
+            <td>@o.TypeOperation</td>
+            <td>@o.Libelle</td>
+            <td>@o.Montant</td>
+        </tr>
+    }
+
+</table>
