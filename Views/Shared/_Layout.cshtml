@@ -10,6 +10,9 @@
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 
+    <!-- Dans <head> -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+
     <style>
 
             body {
@@ -146,7 +149,8 @@
 
         <nav class="nav flex-column">
 
-            <a class="nav-link active" href="/Dashboard/Index">
+            @* <a class="nav-link active bg-orange" href="/Dashboard/Index"> *@
+            <a class="nav-link bg-orange" " href="/Dashboard/Index">
                 <i class="fas fa-home"></i>
                 Tableau de bord
             </a>
@@ -183,7 +187,7 @@
         </nav>
 
         <div class="logout">
-            <a href="#">
+            <a href="/Auth/login">
                 <i class="fas fa-power-off"></i>
                 Déconnexion
             </a>
@@ -193,7 +197,7 @@
 
     <div class="content">
 
-        <div class="topbar">
+        <div class="topbar bg-orange" style="color: white;">
 
             <h4 class="mb-0">
                 @ViewData["Title"]
@@ -218,6 +222,13 @@
         </div>
 
     </div>
+
+    <!-- Avant </body> -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
 
 </body>
 </html>

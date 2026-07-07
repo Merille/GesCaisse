@@ -3,6 +3,7 @@ using EasytransitCaisse.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace EasytransitCaisse.Controllers
 {
@@ -16,11 +17,20 @@ namespace EasytransitCaisse.Controllers
         }
 
         // LISTE
-        public IActionResult Index()
+
+        public async Task<IActionResult> Index()
         {
-            var users = _context.Utilisateurs.ToList();
+            var users = await _context.Utilisateurs
+                .OrderBy(c => c.NomUtilisateur)
+                .ToListAsync();
+
             return View(users);
         }
+        //public IActionResult Index()
+        //{
+        //    var users = _context.Utilisateurs.ToList();
+        //    return View(users);
+        //}
 
         // CREATE GET
         public IActionResult Create()

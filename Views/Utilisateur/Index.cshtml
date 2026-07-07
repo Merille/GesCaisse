@@ -3,7 +3,7 @@
 <div class="container mt-4">
 
     <div class="d-flex justify-content-between mb-3">
-        <h3>Utilisateurs</h3>
+        <h3>Liste des Utilisateurs</h3>
 
         <a href="/Utilisateur/Create" class="btn btn-primary">
             + Nouvel utilisateur
@@ -12,7 +12,8 @@
 
     <div class="card shadow-sm">
 
-        <table class="table table-hover align-middle mb-0">
+        <table id="UsersTable" class="table table-hover align-middle mb-0">
+            @* <table class="table table-hover align-middle mb-0"> *@
             <thead class="table-dark">
                 <tr>
                     <th>Nom utilisateur</th>
@@ -50,3 +51,22 @@
 
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#UsersTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json'
+                },
+                pageLength: 10,
+                lengthMenu: [10, 25, 50, 100],
+                order: [[1, 'asc']], // Tri par défaut sur Société
+                columnDefs: [
+                    { orderable: false, targets: 3 } // Colonne Actions non triable
+                ],
+                dom: '<"d-flex justify-content-between align-items-center mb-3"lf>rtip'
+            });
+        });
+    </script>
+}

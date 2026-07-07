@@ -1,0 +1,44 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@{
+    ViewData["Title"] = "Importer des clients";
+}
+
+<div class="container mt-4">
+    <h3>Importer des clients</h3>
+
+    <div class="card shadow-sm p-4 mt-3">
+        <form method="post" enctype="multipart/form-data" asp-action="Import">
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Fichier Excel (.xlsx)</label>
+                <input type="file" name="file" accept=".xlsx" class="form-control" required />
+            </div>
+
+            <div class="alert alert-info">
+                <strong>Format attendu :</strong>
+                <ul class="mb-0 mt-1">
+                    <li>Colonne A : Code client</li>
+                    <li>Colonne B : Nom société</li>
+                    <li>Colonne C : Nom contact</li>
+                    <li>Colonne D : Téléphone</li>
+                    <li>Colonne E : Email contact</li>
+                    <li>Colonne F : Adresse</li>
+                    <li>Colonne G : Email société</li>
+                    <li>Colonne H : Fonction contact</li>
+                    <li>Colonne I : Téléphone contact</li>
+                </ul>
+                <small>La première ligne (en-tête) sera ignorée.</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                📤 Importer
+            </button>
+            <a href="@Url.Action("Index")" class="btn btn-outline-secondary ms-2">
+                Annuler
+            </a>
+        </form>
+    </div>
+</div>

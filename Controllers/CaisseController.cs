@@ -3,6 +3,7 @@ using EasytransitCaisse.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Rotativa.AspNetCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace EasytransitCaisse.Controllers
 {
@@ -53,14 +54,43 @@ namespace EasytransitCaisse.Controllers
         [HttpPost]
         public IActionResult Create(Caisse caisse)
         {
+            // Forcer des valeurs vides pour éviter l'erreur Required
+            caisse.CustomerDefaultCode ??= "";
+            caisse.JournalDefaultCode ??= "";
+            caisse.ChkCode ??= "";
+            caisse.ChkDescription ??= "";
+            caisse.StCode ??= "";
+
+            ModelState.Clear();
+
             if (!ModelState.IsValid)
-                return View(caisse);
+            {
+                ViewBag.Users = _context.Utilisateurs
+                    .Select(u => new SelectListItem
+                    {
+                        Value = u.Id.ToString(),
+                        Text = u.NomComplet
+                    })
+                    .ToList();
+
+                return View(caisse); // ← ViewBag.Users rechargé
+            }
 
             _context.Caisses.Add(caisse);
             _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
+        //public IActionResult Create(Caisse caisse)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return View(caisse);
+
+        //    _context.Caisses.Add(caisse);
+        //    _context.SaveChanges();
+
+        //    return RedirectToAction("Index");
+        //}
 
         // EDIT - GET
         public IActionResult Edit(int id)
