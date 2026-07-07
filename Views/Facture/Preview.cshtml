@@ -44,6 +44,26 @@
 </head>
 
 <body>
+
+    <div class="container-fluid">
+
+        <!-- Barre d'actions -->
+        <div class="mb-3 no-print">
+            <a asp-action="Edit"
+               asp-route-id="@Model.Facture.Id"
+               class="btn btn-secondary">
+                Retour
+            </a>
+
+            <button onclick="window.print()" class="btn btn-primary">
+                <i class="fa fa-print"></i>
+                Imprimer
+            </button>
+        </div>
+
+        <!-- Facture -->
+        <div id="facture">
+
     @Html.Raw(System.Net.WebUtility.HtmlDecode(@"
         <div style='display:flex; justify-content:space-between; margin-bottom:20px;'>
 
@@ -106,6 +126,9 @@
         <p>HT : @Model.Facture.MontantHT.ToString("N2")</p>
         <p>TVA : @Model.Facture.MontantTVA.ToString("N2")</p>
         <p>TTC : @Model.Facture.MontantTTC.ToString("N2")</p>
+    </div>
+        </div>
+
     </div>
 
 </body>

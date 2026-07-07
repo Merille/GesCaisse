@@ -1,12 +1,21 @@
 ﻿@model EasytransitCaisse.Models.Facture
-
+@{
+    ViewData["Title"] = "Factures";
+}
 <div class="container mt-4">
+    <div class="d-flex justify-content-between mb-3">
+        <h3>Détail facture</h3>
 
-    <a href="/Facture/Print/@Model.Id"
+    </div>
+    @* <a href="/Facture/Print/@Model.Id"
            class="btn btn-dark">
         Imprimer PDF
+    </a> *@
+    <a asp-action="Preview"
+       asp-route-id="@Model.Id"
+       class="btn btn-primary">
+        <i class="fa fa-eye"></i> Aperçu
     </a>
-
     <div class="card shadow-lg">
 
         <div class="card-header bg-primary text-white">
@@ -28,7 +37,7 @@
                     <label>TVA</label>
                     <input class="form-control"
                            readonly
-                           value="@Model.MontantTVA.ToString("N0")" />
+                           value="@Model.TauxTVA.ToString("N0")" />
                 </div>
 
                 <div class="col-md-3">
@@ -118,6 +127,7 @@
                         <th>Qté</th>
                         <th>PU</th>
                         <th>Total</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
 
@@ -130,6 +140,16 @@
                             <td>@ligne.Quantite</td>
                             <td>@ligne.PrixUnitaire.ToString("N0")</td>
                             <td>@ligne.TotalLigne.ToString("N0")</td>
+                            <td>
+                                <a asp-action="SupprimerLigne"
+                                   asp-route-id="@ligne.Id"
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('Voulez-vous supprimer cette ligne ?');">
+
+                                    <i class="fa fa-trash"></i>
+
+                                </a>
+                            </td>
                         </tr>
                     }
 

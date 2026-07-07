@@ -1,7 +1,9 @@
 ﻿using EasytransitCaisse.Data;
 using EasytransitCaisse.Models;
+using EasytransitCaisse.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Rotativa.AspNetCore;
 
 namespace EasytransitCaisse.Controllers
@@ -66,40 +68,52 @@ namespace EasytransitCaisse.Controllers
     decimal quantite,
     decimal prixUnitaire)
         {
-            var ligne = new LigneFacture
+            using var transaction = _context.Database.BeginTransaction();
+
+            try
             {
-                FactureId = factureId,
-                Designation = designation,
-                Quantite = quantite,
-                PrixUnitaire = prixUnitaire,
-                TotalLigne = quantite * prixUnitaire
-            };
+                var ligne = new LigneFacture
+                {
+                    FactureId = factureId,
+                    Designation = designation,
+                    Quantite = quantite,
+                    PrixUnitaire = prixUnitaire,
+                    TotalLigne = quantite * prixUnitaire
+                };
 
-            _context.LignesFactures.Add(ligne);
+                _context.LignesFactures.Add(ligne);
+                _context.SaveChanges();
 
-            RecalculerFacture(factureId);
+                RecalculerFacture(factureId);
 
-            _context.SaveChanges();
+                _context.SaveChanges();
 
-            return RedirectToAction("Edit", new { id = factureId });
+                transaction.Commit();
+
+                return RedirectToAction(nameof(Edit), new { id = factureId });
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
         }
         private void RecalculerFacture(int factureId)
         {
             var facture = _context.Factures
-                .First(x => x.Id == factureId);
+                .SingleOrDefault(x => x.Id == factureId);
 
-            var totalHt = _context.LignesFactures
+            if (facture == null)
+                return;
+
+            facture.MontantHT = _context.LignesFactures
                 .Where(x => x.FactureId == factureId)
                 .Sum(x => (decimal?)x.TotalLigne) ?? 0;
 
-            facture.MontantHT = totalHt;
+            facture.MontantTVA = Math.Round(
+                facture.MontantHT * facture.TauxTVA / 100, 2);
 
-            facture.MontantTVA =
-                totalHt * facture.TauxTVA / 100;
-
-            facture.MontantTTC =
-                facture.MontantHT +
-                facture.MontantTVA;
+            facture.MontantTTC = facture.MontantHT + facture.MontantTVA;
         }
 
         [HttpPost]
@@ -124,19 +138,62 @@ namespace EasytransitCaisse.Controllers
             if (facture == null)
                 return NotFound();
 
-            var lignes = _context.LignesFactures
-                .Where(x => x.FactureId == id)
-                .ToList();
+            var model = new FacturePrintViewModel
+            {
+                Facture = facture,
+                Lignes = _context.LignesFactures
+                    .Where(x => x.FactureId == id)
+                    .ToList()
+            };
 
-            ViewBag.Lignes = lignes;
-
-            return new ViewAsPdf("Print", facture)
+            return new ViewAsPdf("Print", model)
             {
                 FileName = $"Facture_{facture.Numero}.pdf",
                 PageSize = Rotativa.AspNetCore.Options.Size.A4,
                 PageMargins = new Rotativa.AspNetCore.Options.Margins(10, 10, 10, 10)
             };
         }
+
+        public IActionResult Preview(int id)
+        {
+            var facture = _context.Factures
+                .Include(f => f.Client)
+                .FirstOrDefault(f => f.Id == id);
+
+            if (facture == null)
+                return NotFound();
+
+            var model = new FacturePrintViewModel
+            {
+                Facture = facture,
+                Lignes = _context.LignesFactures
+                    .Where(x => x.FactureId == id)
+                    .ToList()
+            };
+
+            return View(model);
+        }
+        public IActionResult SupprimerLigne(int id)
+        {
+            var ligne = _context.LignesFactures
+                .FirstOrDefault(x => x.Id == id);
+
+            if (ligne == null)
+                return NotFound();
+
+            int factureId = ligne.FactureId;
+
+            _context.LignesFactures.Remove(ligne);
+
+            _context.SaveChanges();
+
+            RecalculerFacture(factureId);
+
+            _context.SaveChanges();
+
+            return RedirectToAction(nameof(Edit), new { id = factureId });
+        }
+
 
     }
 }

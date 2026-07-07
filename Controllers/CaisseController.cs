@@ -51,17 +51,28 @@ namespace EasytransitCaisse.Controllers
 
         // CREATE - POST
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(Caisse caisse)
         {
             if (!ModelState.IsValid)
+            {
+                // Recharger la liste des utilisateurs
+                ViewBag.Users = _context.Utilisateurs
+                    .Select(u => new SelectListItem
+                    {
+                        Value = u.Id.ToString(),
+                        Text = u.NomComplet
+                    })
+                    .ToList();
+
                 return View(caisse);
+            }
 
             _context.Caisses.Add(caisse);
             _context.SaveChanges();
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
-
         // EDIT - GET
         public IActionResult Edit(int id)
         {

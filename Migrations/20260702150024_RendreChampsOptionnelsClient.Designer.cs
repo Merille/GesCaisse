@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasytransitCaisse.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260619125830_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260702150024_RendreChampsOptionnelsClient")]
+    partial class RendreChampsOptionnelsClient
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,15 +41,12 @@ namespace EasytransitCaisse.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ChkDescription")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomerDefaultCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("JournalDefaultCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("SalesPersonDefault")
@@ -73,7 +70,6 @@ namespace EasytransitCaisse.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Adresse")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CodeClient")
@@ -81,19 +77,15 @@ namespace EasytransitCaisse.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EmailContact")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FonctionContact")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NomContact")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NomSociete")
@@ -101,11 +93,9 @@ namespace EasytransitCaisse.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Telephone")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TelephoneContact")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -237,9 +227,6 @@ namespace EasytransitCaisse.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CaisseId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("ClientId")
                         .HasColumnType("int");
 
@@ -264,8 +251,6 @@ namespace EasytransitCaisse.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CaisseId");
 
                     b.HasIndex("ClientId");
 
@@ -310,7 +295,7 @@ namespace EasytransitCaisse.Migrations
                     b.HasOne("EasytransitCaisse.Models.Client", "Client")
                         .WithMany()
                         .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Client");
@@ -321,7 +306,7 @@ namespace EasytransitCaisse.Migrations
                     b.HasOne("EasytransitCaisse.Models.Caisse", "Caisse")
                         .WithMany()
                         .HasForeignKey("CaisseId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Caisse");
@@ -332,7 +317,7 @@ namespace EasytransitCaisse.Migrations
                     b.HasOne("EasytransitCaisse.Models.Facture", "Facture")
                         .WithMany()
                         .HasForeignKey("FactureId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Facture");
@@ -340,16 +325,9 @@ namespace EasytransitCaisse.Migrations
 
             modelBuilder.Entity("EasytransitCaisse.Models.OperationCaisse", b =>
                 {
-                    b.HasOne("EasytransitCaisse.Models.Caisse", "Caisse")
-                        .WithMany()
-                        .HasForeignKey("CaisseId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("EasytransitCaisse.Models.Client", "Client")
                         .WithMany()
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ClientId");
 
                     b.HasOne("EasytransitCaisse.Models.JourneeCaisse", "JourneeCaisse")
                         .WithMany()
@@ -360,10 +338,8 @@ namespace EasytransitCaisse.Migrations
                     b.HasOne("EasytransitCaisse.Models.Utilisateur", "Utilisateur")
                         .WithMany()
                         .HasForeignKey("UtilisateurId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Caisse");
 
                     b.Navigation("Client");
 

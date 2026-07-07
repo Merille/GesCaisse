@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasytransitCaisse.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260618164252_AddCaisseIdToOperationCaisse")]
-    partial class AddCaisseIdToOperationCaisse
+    [Migration("20260702141451_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,15 +41,12 @@ namespace EasytransitCaisse.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ChkDescription")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomerDefaultCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("JournalDefaultCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("SalesPersonDefault")
@@ -237,9 +234,6 @@ namespace EasytransitCaisse.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CaisseId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("ClientId")
                         .HasColumnType("int");
 
@@ -264,8 +258,6 @@ namespace EasytransitCaisse.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CaisseId");
 
                     b.HasIndex("ClientId");
 
@@ -340,12 +332,6 @@ namespace EasytransitCaisse.Migrations
 
             modelBuilder.Entity("EasytransitCaisse.Models.OperationCaisse", b =>
                 {
-                    b.HasOne("EasytransitCaisse.Models.Caisse", "Caisse")
-                        .WithMany()
-                        .HasForeignKey("CaisseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("EasytransitCaisse.Models.Client", "Client")
                         .WithMany()
                         .HasForeignKey("ClientId");
@@ -353,7 +339,7 @@ namespace EasytransitCaisse.Migrations
                     b.HasOne("EasytransitCaisse.Models.JourneeCaisse", "JourneeCaisse")
                         .WithMany()
                         .HasForeignKey("JourneeCaisseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("EasytransitCaisse.Models.Utilisateur", "Utilisateur")
@@ -361,8 +347,6 @@ namespace EasytransitCaisse.Migrations
                         .HasForeignKey("UtilisateurId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Caisse");
 
                     b.Navigation("Client");
 

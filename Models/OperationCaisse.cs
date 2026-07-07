@@ -16,8 +16,6 @@
 
         public int? ClientId { get; set; }
 
-        public int CaisseId { get; set; }
-
         public int UtilisateurId { get; set; }
 
         public virtual JourneeCaisse JourneeCaisse { get; set; }
@@ -25,7 +23,6 @@
         public virtual Client Client { get; set; }
 
         public virtual Utilisateur Utilisateur { get; set; }
-        public Caisse Caisse { get; set; } // 🔥 AJOUT IMPORTANT
 
     }
 }

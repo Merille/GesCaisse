@@ -1,5 +1,7 @@
 ﻿@model EasytransitCaisse.Models.Facture
-
+@{
+    ViewData["Title"] = "Factures";
+}
 <div class="container mt-4">
 
     <div class="card shadow-lg">
@@ -15,16 +17,16 @@
                 <div class="row">
 
                     <div class="col-md-6 mb-3">
-                        <label>Numéro</label>
+                        <label>Numéro (*)</label>
                         <input name="Numero"
-                               class="form-control" />
+                               class="form-control" required />
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label>Client</label>
+                        <label>Client (*)</label>
 
                         <select name="ClientId"
-                                class="form-select">
+                                class="form-select" required>
 
                             @foreach (var client in ViewBag.Clients)
                             {
@@ -35,13 +37,7 @@
 
                         </select>
                     </div>
-
-                    <div class="col-md-4 mb-3">
-                        <label>Montant HT</label>
-                        <input name="MontantHT"
-                               class="form-control" />
-                    </div>
-
+                   
                     <div class="col-md-4 mb-3">
                         <label>TVA (%)</label>
                         <input name="TauxTVA"
