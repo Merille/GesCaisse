@@ -1,8 +1,4 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+
 @model List<EasytransitCaisse.Models.Client>
 
 @if (TempData["Success"] != null)
@@ -18,7 +14,6 @@
     <input type="file" name="file" accept=".xlsx" id="importFile" style="display:none"
            onchange="document.getElementById('importForm').submit()" />
 </form>
-
 <div class="container mt-4">
     <div class="d-flex justify-content-between mb-3">
         <h3>Liste des Clients</h3>

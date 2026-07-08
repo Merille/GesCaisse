@@ -1,5 +1,7 @@
 ﻿@model EasytransitCaisse.Models.Caisse
-
+@{
+    ViewData["Title"] = "Caisses";
+}
 <div class="container mt-4">
 
     <div class="card shadow-lg">
@@ -9,7 +11,6 @@
 
         <div class="card-body">
 
-            @* Afficher les erreurs de validation *@
             @if (!ViewData.ModelState.IsValid)
             {
                 <div class="alert alert-danger">
@@ -20,27 +21,25 @@
                 </div>
             }
 
-            @* ← asp-action et asp-controller ajoutés *@
             <form method="post" asp-action="Create" asp-controller="Caisse">
                 @Html.AntiForgeryToken()
-
                 <div class="row">
 
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Code Caisse</label>
-                        <input name="ChkCode" class="form-control" placeholder="Ex: CASH01" />
+                        <label class="form-label">Code Caisse (*)</label>
+                        <input name="ChkCode" class="form-control" placeholder="Ex: CASH01" required />
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Description</label>
-                        <input name="ChkDescription" class="form-control" placeholder="Caisse principale" />
+                        <label class="form-label">StCode (*)</label>
+                        <input name="StCode" class="form-control" required />
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">StCode</label>
-                        <input name="StCode" class="form-control" />
+                        <label class="form-label">Libellé (*)</label>
+                        <input name="ChkDescription" class="form-control" placeholder="Caisse principale" required />
                     </div>
-
+                   
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Caissier par défaut</label>
                         <select name="CashierDefault" class="form-select">
@@ -51,17 +50,6 @@
                             }
                         </select>
                     </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Client par défaut</label>
-                        <input name="CustomerDefaultCode" class="form-control" />
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Journal</label>
-                        <input name="JournalDefaultCode" class="form-control" />
-                    </div>
-
                 </div>
 
                 <div class="d-flex justify-content-end gap-2">

@@ -52,6 +52,7 @@ namespace EasytransitCaisse.Controllers
 
         // CREATE - POST
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(Caisse caisse)
         {
             // Forcer des valeurs vides pour éviter l'erreur Required
@@ -72,27 +73,14 @@ namespace EasytransitCaisse.Controllers
                         Text = u.NomComplet
                     })
                     .ToList();
-
-                return View(caisse); // ← ViewBag.Users rechargé
+                return View(caisse);
             }
 
             _context.Caisses.Add(caisse);
             _context.SaveChanges();
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
-        //public IActionResult Create(Caisse caisse)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return View(caisse);
-
-        //    _context.Caisses.Add(caisse);
-        //    _context.SaveChanges();
-
-        //    return RedirectToAction("Index");
-        //}
-
-        // EDIT - GET
         public IActionResult Edit(int id)
         {
             var caisse = _context.Caisses.FirstOrDefault(c => c.ID == id);

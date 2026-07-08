@@ -1,5 +1,7 @@
 ﻿@model EasytransitCaisse.Models.Client
-
+@{
+    ViewData["Title"] = "Clients";
+}
 <div class="container mt-4">
 
     <div class="card shadow-lg">
@@ -17,13 +19,13 @@
                 <div class="row">
 
                     <div class="col-md-6 mb-3">
-                        <label>Code client</label>
-                        <input name="CodeClient" class="form-control" />
+                        <label>Code client (*)</label>
+                        <input name="CodeClient" class="form-control" required />
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label>Nom société</label>
-                        <input name="NomSociete" class="form-control" />
+                        <label>Nom société (*)</label>
+                        <input name="NomSociete" class="form-control" required />
                     </div>
 
                     <div class="col-md-6 mb-3">

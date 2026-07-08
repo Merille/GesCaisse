@@ -14,12 +14,12 @@ namespace EasytransitCaisse.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            foreach (var relationship in modelBuilder.Model
-                .GetEntityTypes()
-                .SelectMany(e => e.GetForeignKeys()))
-            {
-                relationship.DeleteBehavior = DeleteBehavior.Restrict;
-            }
+
+            modelBuilder.Entity<OperationCaisse>()
+            .HasOne(o => o.JourneeCaisse)
+            .WithMany()
+            .HasForeignKey(o => o.JourneeCaisseId)
+            .OnDelete(DeleteBehavior.Restrict);
         }
 
         public DbSet<Utilisateur> Utilisateurs { get; set; }

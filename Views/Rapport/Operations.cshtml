@@ -1,90 +1,268 @@
-﻿<div class="card p-3 mb-3">
+﻿@model EasytransitCaisse.Models.ViewModels.RapportOperationsVM
 
-    <div class="row">
+@{
+    ViewData["Title"] = "Rapport des opérations";
+}
 
-        <div class="col-md-3">
-            <label>Date début</label>
-            <input type="date" id="dateDebut" class="form-control">
+<div class="card shadow">
+
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">
+            Rapport des opérations
+        </h4>
+    </div>
+
+    <div class="card-body">
+
+        <form method="get">
+
+            <div class="row">
+
+                <div class="col-md-2">
+                    <label>Date début</label>
+                    <input type="date"
+                           name="dateDebut"
+                           value="@Model.DateDebut?.ToString("yyyy-MM-dd")"
+                           class="form-control"/>
+                </div>
+
+                <div class="col-md-2">
+                    <label>Date fin</label>
+                    <input type="date"
+                           name="dateFin"
+                           value="@Model.DateFin?.ToString("yyyy-MM-dd")"
+                           class="form-control"/>
+                </div>
+
+                <div class="col-md-3">
+                    <label>Caisse</label>
+
+                    <select class="form-select"
+                            name="caisseId"
+                            asp-items="ViewBag.Caisses">
+
+                        <option value="">Toutes</option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <label>Type</label>
+
+                    <select class="form-select"
+                            name="typeOperation">
+
+                        <option value="">Toutes</option>
+
+                        <option value="Encaissement">
+                            Encaissement
+                        </option>
+
+                        <option value="Décaissement">
+                            Décaissement
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-2 d-grid">
+
+                    <label>&nbsp;</label>
+
+                    <button class="btn btn-primary">
+
+                        Rechercher
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+        <hr />
+
+        <div class="mb-3">
+
+            <a class="btn btn-success"
+               target="_blank"
+               asp-action="PreviewOperations"
+               asp-route-dateDebut="@Model.DateDebut?.ToString("yyyy-MM-dd")"
+               asp-route-dateFin="@Model.DateFin?.ToString("yyyy-MM-dd")"
+               asp-route-caisseId="@Model.CaisseId"
+               asp-route-typeOperation="@Model.TypeOperation">
+
+                <i class="fa fa-print"></i>
+
+                Aperçu / Imprimer
+
+            </a>
+
         </div>
 
-        <div class="col-md-3">
-            <label>Date fin</label>
-            <input type="date" id="dateFin" class="form-control">
-        </div>
+        <table class="table table-bordered table-hover">
 
-        <div class="col-md-3">
-            <label>Type</label>
-            <select id="type" class="form-control">
-                <option value="">Tous</option>
-                <option value="Encaissement">Encaissement</option>
-                <option value="Décaissement">Décaissement</option>
-            </select>
-        </div>
+            <thead class="table-dark">
 
-        <div class="col-md-3">
-            <label>Caisse</label>
-            <select id="caisseId" class="form-control">
-                <option value="">Toutes</option>
-                @foreach (var c in ViewBag.Caisses)
-                {
-                    <option value="@c.ID">@c.ChkDescription</option>
-                }
-            </select>
-        </div>
+            <tr>
+
+                <th>Date</th>
+
+                <th>Journée</th>
+
+                <th>Type</th>
+
+                <th>Libellé</th>
+
+                <th>Client</th>
+
+                <th>Caissier</th>
+
+                <th class="text-end">
+
+                    Montant
+
+                </th>
+
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            @foreach(var item in Model.Operations)
+            {
+
+                <tr>
+
+                    <td>
+
+                        @item.DateOperation.ToString("dd/MM/yyyy HH:mm")
+
+                    </td>
+
+                    <td>
+
+                        @item.JourneeCaisse.NumeroJournee
+
+                    </td>
+
+                    <td>
+
+                        @item.TypeOperation
+
+                    </td>
+
+                    <td>
+
+                        @item.Libelle
+
+                    </td>
+
+                    <td>
+
+                        @(item.Client?.NomSociete ?? "")
+
+                    </td>
+
+                    <td>
+
+                        @item.Utilisateur.NomComplet
+
+                    </td>
+
+                    <td class="text-end">
+
+                        @item.Montant.ToString("N0")
+
+                    </td>
+
+                </tr>
+
+            }
+
+            </tbody>
+
+            <tfoot>
+
+                <tr class="table-success">
+
+                    <th colspan="6">
+
+                        Total Encaissements
+
+                    </th>
+
+                    <th class="text-end">
+
+                        @Model.TotalEntrees.ToString("N0")
+
+                    </th>
+
+                </tr>
+
+                <tr class="table-danger">
+
+                    <th colspan="6">
+
+                        Total Décaissements
+
+                    </th>
+
+                    <th class="text-end">
+
+                        @Model.TotalSorties.ToString("N0")
+
+                    </th>
+
+                </tr>
+
+                <tr class="table-primary">
+
+                    <th colspan="6">
+
+                        Solde
+
+                    </th>
+
+                    <th class="text-end">
+
+                        @((Model.TotalEntrees-Model.TotalSorties).ToString("N0"))
+
+                    </th>
+
+                </tr>
+
+                <tr class="table-warning">
+
+                    <th colspan="6">
+                        Montant initial des journées
+                    </th>
+
+                    <th class="text-end">
+                        @Model.MontantInitialJournees.ToString("N0")
+                    </th>
+
+                </tr>
+                <tr class="table-info">
+
+                    <th colspan="6">
+                        Solde théorique
+                    </th>
+
+                    <th class="text-end">
+                        @((Model.MontantInitialJournees + Model.TotalEntrees - Model.TotalSorties).ToString("N0"))
+                    </th>
+
+                </tr>
+            </tfoot>
+
+        </table>
 
     </div>
 
-    <button class="btn btn-primary mt-3" onclick="loadData()">
-        Rechercher
-    </button>
-
 </div>
-
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Caisse</th>
-            <th>Type</th>
-            <th>Montant</th>
-            <th>Libellé</th>
-        </tr>
-    </thead>
-
-    <tbody id="resultats">
-    </tbody>
-</table>
-
-
-<script>
-    
-    function loadData() {
-        alert("JS chargé !");
-        let dateDebut = document.getElementById("dateDebut").value;
-        let dateFin = document.getElementById("dateFin").value;
-        let type = document.getElementById("type").value;
-        let caisseId = document.getElementById("caisseId").value;
-
-        fetch(`/Rapport/GetOperations?dateDebut=${dateDebut}&dateFin=${dateFin}&type=${type}&caisseId=${caisseId}`)
-            .then(response => response.json())
-            .then(data => {
-
-                let rows = "";
-
-                data.forEach(item => {
-
-                    rows += `
-                        <tr>
-                            <td>${new Date(item.dateOperation).toLocaleDateString()}</td>
-                            <td>${item.caisse}</td>
-                            <td>${item.typeOperation}</td>
-                            <td>${item.montant}</td>
-                            <td>${item.libelle ?? ''}</td>
-                        </tr>
-                    `;
-                });
-
-                document.getElementById("resultats").innerHTML = rows;
-            });
-    }
-</script>
