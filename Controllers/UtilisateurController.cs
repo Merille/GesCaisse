@@ -1,6 +1,8 @@
 ﻿using EasytransitCaisse.Data;
 using EasytransitCaisse.Models;
+using EasytransitCaisse.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
@@ -10,17 +12,41 @@ namespace EasytransitCaisse.Controllers
     public class UtilisateurController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly ITenantProvider _tenantProvider;
 
-        public UtilisateurController(AppDbContext context)
+        public UtilisateurController(AppDbContext context, ITenantProvider tenantProvider)
         {
             _context = context;
+            _tenantProvider = tenantProvider;
+        }
+
+        // Seul le SuperAdmin choisit le tenant explicitement (les autres profils
+        // sont automatiquement rattachés à leur propre tenant à l'enregistrement).
+        private void ChargerTenantsSiSuperAdmin()
+        {
+            ViewBag.IsSuperAdmin = _tenantProvider.IsSuperAdmin;
+
+            if (_tenantProvider.IsSuperAdmin)
+            {
+                ViewBag.Tenants = _context.Tenants
+                    .OrderBy(t => t.Nom)
+                    .Select(t => new SelectListItem
+                    {
+                        Value = t.Id.ToString(),
+                        Text = t.Nom
+                    })
+                    .ToList();
+            }
         }
 
         // LISTE
 
         public async Task<IActionResult> Index()
         {
+            ViewBag.IsSuperAdmin = _tenantProvider.IsSuperAdmin;
+
             var users = await _context.Utilisateurs
+                .Include(u => u.Tenant)
                 .OrderBy(c => c.NomUtilisateur)
                 .ToListAsync();
 
@@ -35,6 +61,7 @@ namespace EasytransitCaisse.Controllers
         // CREATE GET
         public IActionResult Create()
         {
+            ChargerTenantsSiSuperAdmin();
             return View();
         }
 
@@ -43,7 +70,17 @@ namespace EasytransitCaisse.Controllers
         public IActionResult Create(Utilisateur user)
         {
             if (!ModelState.IsValid)
+            {
+                ChargerTenantsSiSuperAdmin();
                 return View(user);
+            }
+
+            // Seul le SuperAdmin choisit librement le tenant (y compris "aucun").
+            // Un Admin/Caissier rattache toujours le nouvel utilisateur à son propre tenant.
+            if (!_tenantProvider.IsSuperAdmin)
+            {
+                user.TenantId = _tenantProvider.TenantId;
+            }
 
             user.MotPasse = HashPassword(user.MotPasse);
 
@@ -63,6 +100,8 @@ namespace EasytransitCaisse.Controllers
 
             user.MotPasse = ""; // ne pas afficher le hash
 
+            ChargerTenantsSiSuperAdmin();
+
             return View(user);
         }
 
@@ -78,6 +117,13 @@ namespace EasytransitCaisse.Controllers
             existing.NomUtilisateur = user.NomUtilisateur;
             existing.NomComplet = user.NomComplet;
             existing.Profil = user.Profil;
+            existing.PeutValiderOperations = user.PeutValiderOperations;
+
+            // Seul le SuperAdmin peut changer le tenant d'un utilisateur.
+            if (_tenantProvider.IsSuperAdmin)
+            {
+                existing.TenantId = user.TenantId;
+            }
 
             // si mot de passe rempli → update
             if (!string.IsNullOrEmpty(user.MotPasse))
@@ -91,6 +137,8 @@ namespace EasytransitCaisse.Controllers
         }
 
         // DELETE
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
             var user = _context.Utilisateurs.Find(id);

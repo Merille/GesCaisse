@@ -1,6 +1,9 @@
 ﻿@model EasytransitCaisse.Models.JourneeCaisse
+@using EasytransitCaisse.Services
 @{
     ViewData["Title"] = "Journées de caisse";
+    var nomValideur = User.FindFirst(AppClaimTypes.NomComplet)?.Value;
+    var peutValider = (bool)(ViewBag.PeutValider ?? false);
 }
 <div class="container mt-4">
 
@@ -9,7 +12,7 @@
         <h4>
             Journée @Model.NumeroJournee
         </h4>
-
+        <br />
         <div>
 
             @if (Model.Statut == "Ouverte")
@@ -18,7 +21,7 @@
                       asp-action="Cloturer"
                       style="display:inline;">
                     <input type="hidden" name="id" value="@Model.Id" />
-                    <button class="btn btn-warning btn-sm">
+                    <button class="btn btn-warning">
                         Clôturer
                     </button>
                 </form>
@@ -28,11 +31,24 @@
                   asp-action="Supprimer"
                   style="display:inline;">
                 <input type="hidden" name="id" value="@Model.Id" />
-                <button class="btn btn-danger btn-sm"
+                <button class="btn btn-danger"
                         onclick="return confirm('Supprimer cette journée ?')">
                     Supprimer
                 </button>
             </form>
+
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalOperation">
+                + Encaissement
+            </button>
+
+            <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalDecaissement">
+                - Décaissement
+            </button>
+
+            <a href="/Caisse/Index"
+               class="btn btn-dark">
+                Retour
+            </a>
 
         </div>
 
@@ -40,7 +56,7 @@
 
     <div class="card shadow-lg">
 
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-orange text-white">
 
             <h4>
                 Journée @Model.NumeroJournee
@@ -111,11 +127,11 @@
         else
         {
             <!-- formulaire normal -->
-            <div class="card-header bg-success text-white">
+            <div class="card-header bg-success text-white" hidden="">
                 Nouvelle opération
             </div>
 
-            <div class="card-body">
+            <div class="card-body" hidden="">
 
                 <form method="post"
                       asp-action="AjouterOperation">
@@ -126,7 +142,7 @@
 
                     <div class="row">
 
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label>Type</label>
 
                             <select name="typeOperation"
@@ -143,7 +159,7 @@
                             </select>
                         </div>
 
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label>Client</label>
 
                             <select name="clientId"
@@ -172,8 +188,19 @@
                                    class="form-control" />
                         </div>
 
-                        <div class="col-md-4">
-                            <label>Libellé</label>
+                        <div class="col-md-3">
+                            <label>Motif</label>
+                            <select name="motifId" class="form-select">
+                                <option value="">-- Choisir un motif --</option>
+                                @foreach (var m in ViewBag.Motifs)
+                                {
+                                    <option value="@m.ID">@m.LibelleMotif</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label>Description</label>
 
                             <input name="libelle"
                                    class="form-control" />
@@ -197,25 +224,32 @@
 
     <div class="card shadow-lg mt-4"> 
 
-        <div class="card-header bg-dark text-white">
+        <div class="card-header bg-primary text-white">
             Historique des opérations
         </div>
 
-        <div class="card-body p-0">
+        <div class="card-body p-2">
             <br />
             <a href="/JourneeCaisse/PrintOperations?journeeId=@Model.Id"
-                   class="btn btn-dark">
+               class="btn bg-primary text-white ">
                 Imprimer opérations
             </a>
-            <table class="table table-hover mb-0">
+  
+            <table id="operationsTable" class="table table-hover mb-0">
 
                 <thead>
 
                     <tr>
                         <th>Date</th>
-                        <th>Type</th>
-                        <th>Libellé</th>
+                        <th>Motif</th>
+                        <th>Description</th>
                         <th>Montant</th>
+                        <th>Type</th>
+                        <th>Statut</th>
+                        @if (peutValider)
+                        {
+                            <th>Actions</th>
+                        }
                     </tr>
 
                 </thead>
@@ -228,6 +262,18 @@
 
                             <td>
                                 @op.DateOperation.ToString("dd/MM/yyyy HH:mm")
+                            </td>
+
+                            <td>
+                                @op.MotifLibelle
+                            </td>
+
+                            <td>
+                                @op.Libelle
+                            </td>
+
+                            <td>
+                                @op.Montant.ToString("N0")
                             </td>
 
                             <td>
@@ -248,12 +294,37 @@
                             </td>
 
                             <td>
-                                @op.Libelle
+                                @if (op.StatutValidation == "Validé")
+                                {
+                                    <span class="badge bg-success">Validé</span>
+                                }
+                                else if (op.StatutValidation == "Rejeté")
+                                {
+                                    <span class="badge bg-danger">Rejeté</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">En attente</span>
+                                }
+                                @if (op.EstJustifie)
+                                {
+                                    <span class="badge bg-info text-dark">Justifié</span>
+                                }
                             </td>
 
-                            <td>
-                                @op.Montant.ToString("N0")
-                            </td>
+                            @if (peutValider)
+                            {
+                                <td>
+                                    <button type="button" class="btn btn-outline-primary btn-sm"
+                                            data-id="@op.Id"
+                                            data-justifie="@(op.EstJustifie ? "true" : "false")"
+                                            data-statut="@op.StatutValidation"
+                                            data-observation="@op.Observation"
+                                            onclick="ouvrirEditValidation(this)">
+                                        Modifier
+                                    </button>
+                                </td>
+                            }
 
                         </tr>
                     }
@@ -265,4 +336,359 @@
         </div>
 
     </div>
+
+    <!-- MODAL OPERATION D'ENCAISSEMENT -->
+    <div class="modal fade" id="modalOperation" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-orange text-white">
+                    <h5 class="modal-title">Nouvelle Opération d'encaissement</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <form method="post" asp-action="AjouterOperation">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="journeeId" value="@Model.Id" />
+
+                    <div class="modal-body">
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3" hidden="">
+                                <label class="form-label">Type</label>
+                                <input name="typeOperation" class="form-control"
+                                       placeholder="Description de l'opération" value="Encaissement" />
+                                @* <select name="typeOperation" class="form-select">
+                                    <option value="Encaissement">Encaissement</option>
+                                    <option value="Décaissement">Décaissement</option>
+                                </select> *@
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tiers</label>
+                                <select name="clientId" class="form-select">
+                                    <option value="">Aucun</option>
+                                    @foreach (var c in ViewBag.Clients)
+                                    {
+                                        <option value="@c.Id">@c.NomSociete</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Montant</label>
+                                <input name="montant" type="number" step="0.01"
+                                       class="form-control" placeholder="0.00" />
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Motif</label>
+                                <select name="motifId" class="form-select">
+                                    <option value="">-- Choisir un motif --</option>
+                                    @foreach (var m in ViewBag.Motifs)
+                                    {
+                                        <option value="@m.ID">@m.LibelleMotif</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Description</label>
+                                <input name="libelle" class="form-control"
+                                       placeholder="Description de l'opération" />
+                            </div>
+
+                        </div>
+
+                        <div class="card mt-2">
+                            <div class="card-header bg-light">Validations</div>
+                            <div class="card-body">
+
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" value="true"
+                                           name="estJustifie" id="estJustifieEnc">
+                                    <label class="form-check-label" for="estJustifieEnc">
+                                        Ce mouvement a été justifié
+                                    </label>
+                                </div>
+
+                                <div class="d-flex gap-4 mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="statutValidation"
+                                               id="statutAttenteEnc" value="En attente" checked>
+                                        <label class="form-check-label" for="statutAttenteEnc">En attente</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="statutValidation"
+                                               id="statutValideEnc" value="Validé" disabled="@(!peutValider)">
+                                        <label class="form-check-label" for="statutValideEnc">Validé</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="statutValidation"
+                                               id="statutRejeteEnc" value="Rejeté" disabled="@(!peutValider)">
+                                        <label class="form-check-label" for="statutRejeteEnc">Rejeté</label>
+                                    </div>
+                                </div>
+
+                                @if (!peutValider)
+                                {
+                                    <p class="text-muted small">
+                                        <i class="fas fa-lock"></i>
+                                        Seuls les utilisateurs ayant le droit "Peut valider / rejeter les opérations
+                                        de caisse" peuvent changer ce statut.
+                                    </p>
+                                }
+
+                                <div class="mb-3">
+                                    <label class="form-label">Valideur</label>
+                                    <input type="text" class="form-control" value="@nomValideur" readonly>
+                                    <input type="hidden" name="valideur" value="@nomValideur">
+                                </div>
+
+                                <div class="mb-0">
+                                    <label class="form-label">Obs.</label>
+                                    <textarea name="observation" class="form-control" rows="3"></textarea>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary"
+                                data-bs-dismiss="modal">
+                            Annuler
+                        </button>
+                        <button type="submit" class="btn btn-success">Enregistrer</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL OPERATION DE DÉCAISSEMENT -->
+    <div class="modal fade" id="modalDecaissement" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-orange text-white">
+                    <h5 class="modal-title">Nouvelle Opération de décaissement</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <form method="post" asp-action="AjouterOperation">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="journeeId" value="@Model.Id" />
+                    <input type="hidden" name="typeOperation" value="Décaissement" />
+
+                    <div class="modal-body">
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tiers</label>
+                                <select name="clientId" class="form-select">
+                                    <option value="">Aucun</option>
+                                    @foreach (var c in ViewBag.Clients)
+                                    {
+                                        <option value="@c.Id">@c.NomSociete</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Montant</label>
+                                <input name="montant" type="number" step="0.01"
+                                       class="form-control" placeholder="0.00" />
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Motif</label>
+                                <select name="motifId" class="form-select">
+                                    <option value="">-- Choisir un motif --</option>
+                                    @foreach (var m in ViewBag.Motifs)
+                                    {
+                                        <option value="@m.ID">@m.LibelleMotif</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Description</label>
+                                <input name="libelle" class="form-control"
+                                       placeholder="Description de l'opération" />
+                            </div>
+
+                        </div>
+
+                        <div class="card mt-2">
+                            <div class="card-header bg-light">Validations</div>
+                            <div class="card-body">
+
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" value="true"
+                                           name="estJustifie" id="estJustifieDec">
+                                    <label class="form-check-label" for="estJustifieDec">
+                                        Ce mouvement a été justifié
+                                    </label>
+                                </div>
+
+                                <div class="d-flex gap-4 mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="statutValidation"
+                                               id="statutAttenteDec" value="En attente" checked>
+                                        <label class="form-check-label" for="statutAttenteDec">En attente</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="statutValidation"
+                                               id="statutValideDec" value="Validé" disabled="@(!peutValider)">
+                                        <label class="form-check-label" for="statutValideDec">Validé</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="statutValidation"
+                                               id="statutRejeteDec" value="Rejeté" disabled="@(!peutValider)">
+                                        <label class="form-check-label" for="statutRejeteDec">Rejeté</label>
+                                    </div>
+                                </div>
+
+                                @if (!peutValider)
+                                {
+                                    <p class="text-muted small">
+                                        <i class="fas fa-lock"></i>
+                                        Seuls les utilisateurs ayant le droit "Peut valider / rejeter les opérations
+                                        de caisse" peuvent changer ce statut.
+                                    </p>
+                                }
+
+                                <div class="mb-3">
+                                    <label class="form-label">Valideur</label>
+                                    <input type="text" class="form-control" value="@nomValideur" readonly>
+                                    <input type="hidden" name="valideur" value="@nomValideur">
+                                </div>
+
+                                <div class="mb-0">
+                                    <label class="form-label">Obs.</label>
+                                    <textarea name="observation" class="form-control" rows="3"></textarea>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary"
+                                data-bs-dismiss="modal">
+                            Annuler
+                        </button>
+                        <button type="submit" class="btn btn-success">Enregistrer</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @if (peutValider)
+    {
+        <!-- MODAL MODIFICATION DU STATUT D'UN MOUVEMENT -->
+        <div class="modal fade" id="modalEditValidation" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-orange text-white">
+                        <h5 class="modal-title">Modifier le statut du mouvement</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <form method="post" asp-action="ModifierValidation">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="journeeId" value="@Model.Id" />
+                        <input type="hidden" name="id" id="editValidationId" />
+
+                        <div class="modal-body">
+
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" value="true"
+                                       name="estJustifie" id="editValidationJustifie">
+                                <label class="form-check-label" for="editValidationJustifie">
+                                    Ce mouvement a été justifié
+                                </label>
+                            </div>
+
+                            <div class="d-flex gap-4 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="statutValidation"
+                                           id="editValidationAttente" value="En attente">
+                                    <label class="form-check-label" for="editValidationAttente">En attente</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="statutValidation"
+                                           id="editValidationValide" value="Validé">
+                                    <label class="form-check-label" for="editValidationValide">Validé</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="statutValidation"
+                                           id="editValidationRejete" value="Rejeté">
+                                    <label class="form-check-label" for="editValidationRejete">Rejeté</label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Valideur</label>
+                                <input type="text" class="form-control" value="@nomValideur" readonly>
+                            </div>
+
+                            <div class="mb-0">
+                                <label class="form-label">Obs.</label>
+                                <textarea name="observation" id="editValidationObservation"
+                                          class="form-control" rows="3"></textarea>
+                            </div>
+
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                Annuler
+                            </button>
+                            <button type="submit" class="btn btn-success">Enregistrer</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
 </div>
+
+
+
+@section Scripts {
+    <script>
+        function ouvrirEditValidation(btn) {
+            document.getElementById('editValidationId').value = btn.dataset.id;
+            document.getElementById('editValidationJustifie').checked = btn.dataset.justifie === 'true';
+            document.getElementById('editValidationObservation').value = btn.dataset.observation || '';
+
+            var statutMap = {
+                'Validé': 'editValidationValide',
+                'Rejeté': 'editValidationRejete'
+            };
+            var radioId = statutMap[btn.dataset.statut] || 'editValidationAttente';
+            document.getElementById(radioId).checked = true;
+
+            new bootstrap.Modal(document.getElementById('modalEditValidation')).show();
+        }
+
+        $(document).ready(function() {
+            $('#operationsTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json'
+                },
+                pageLength: 10,
+                lengthMenu: [10, 25, 50, 100],
+                order: [[0, 'desc']], // tri par date décroissante
+                columnDefs: [
+                    { orderable: false, targets: 4 } // colonne Type non triable
+                ],
+                dom: '<"d-flex justify-content-between align-items-center mb-3"lf>rtip'
+            });
+        });
+    </script>
+}

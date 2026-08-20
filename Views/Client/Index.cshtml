@@ -16,7 +16,7 @@
 </form>
 <div class="container mt-4">
     <div class="d-flex justify-content-between mb-3">
-        <h3>Liste des Clients</h3>
+        <h3>Liste des Tiers</h3>
     </div>
     <div class="d-flex justify-content-end gap-2">
         
@@ -43,9 +43,13 @@
                     <tr>
                         <th>Code</th>
                         <th>Société</th>
+                        <th>Adresse</th>
                         <th>Contact</th>
+                        <th>Fonction</th>
                         <th>Téléphone</th>
-                        <th width="180">Actions</th>
+                        <th style="text-align:center;">Type</th>
+                        <th style="text-align:center;">Actions</th>
+                        @* <th width="180">Actions</th> *@
                     </tr>
                 </thead>
                 <tbody>
@@ -54,13 +58,33 @@
                         <tr>
                             <td>@c.CodeClient</td>
                             <td class="fw-semibold">@c.NomSociete</td>
+                            <td>@c.Adresse</td>
                             <td>@c.NomContact</td>
+                            <td>@c.FonctionContact</td>
                             <td>@c.Telephone</td>
-                            <td>
-                                <a href="/Client/Edit/@c.Id" class="btn btn-warning btn-sm">Modifier</a>
-                                <a href="/Client/Delete/@c.Id"
-                                   class="btn btn-danger btn-sm"
-                                   onclick="return confirm('Supprimer ce client ?')">Supprimer</a>
+                            <td style="text-align:center;">
+                                @{
+                                    string badgeColor = c.Type switch
+                                    {
+                                        "Client" => "bg-primary",   // bleu
+                                        "Fournisseur" => "bg-orange",    // orange
+                                        "Salarié" => "bg-success",    // vert
+                                        "Autre" => "bg-danger",     // rouge
+                                        _ => "bg-secondary"   // gris par défaut
+                                    };
+                                }
+                                <span class="badge @badgeColor">@c.Type</span>
+                                @* @c.Type *@
+                            </td>
+                            <td style="padding-left:100px;">
+                                <div class="d-flex gap-1">
+                                    <a href="/Client/Edit/@c.Id" class="btn btn-warning btn-sm">Modifier</a>
+                                    <form asp-action="Delete" asp-route-id="@c.Id" method="post" class="d-inline"
+                                          onsubmit="return confirm('Supprimer ce client ?')">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     }

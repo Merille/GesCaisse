@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Rotativa.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace EasytransitCaisse.Controllers
 {
@@ -19,17 +20,23 @@ namespace EasytransitCaisse.Controllers
         // LISTE
         public IActionResult Index()
         {
+            // Left join (et non Join) : une caisse sans caissier par défaut assigné
+            // (CashierDefault null ou ne correspondant à aucun utilisateur) doit
+            // rester visible, pas disparaître silencieusement de la liste.
             var caisses = _context.Caisses
-            .Join(_context.Utilisateurs,
+            .GroupJoin(_context.Utilisateurs,
                 c => c.CashierDefault,
                 u => u.Id,
-                (c, u) => new CaisseViewModel
+                (c, users) => new { c, users })
+            .SelectMany(
+                x => x.users.DefaultIfEmpty(),
+                (x, u) => new CaisseViewModel
                 {
-                    ID = c.ID,
-                    ChkCode = c.ChkCode,
-                    ChkDescription = c.ChkDescription,
-                    StCode = c.StCode,
-                    CashierName = u.NomComplet
+                    ID = x.c.ID,
+                    ChkCode = x.c.ChkCode,
+                    ChkDescription = x.c.ChkDescription,
+                    StCode = x.c.StCode,
+                    CashierName = u != null ? u.NomComplet : null
                 })
             .ToList();
 
@@ -103,13 +110,29 @@ namespace EasytransitCaisse.Controllers
         [HttpPost]
         public IActionResult Edit(Caisse caisse)
         {
-            _context.Caisses.Update(caisse);
+            var existing = _context.Caisses.FirstOrDefault(c => c.ID == caisse.ID);
+
+            if (existing == null)
+                return NotFound();
+
+            // Copie champ à champ (et non Update() global) pour ne pas écraser
+            // TenantId, absent du formulaire, avec la valeur par défaut 0.
+            existing.ChkCode = caisse.ChkCode;
+            existing.ChkDescription = caisse.ChkDescription;
+            existing.StCode = caisse.StCode;
+            existing.SalesPersonDefault = caisse.SalesPersonDefault;
+            existing.CashierDefault = caisse.CashierDefault;
+            existing.CustomerDefaultCode = caisse.CustomerDefaultCode;
+            existing.JournalDefaultCode = caisse.JournalDefaultCode;
+
             _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
 
         // DELETE
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
             var caisse = _context.Caisses.Find(id);
@@ -231,7 +254,8 @@ namespace EasytransitCaisse.Controllers
                 TypeOperation = typeOperation,
                 Montant = montant,
                 Libelle = libelle,
-                ClientId = clientId
+                ClientId = clientId,
+                UtilisateurId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!)
             };
 
             _context.OperationsCaisses.Add(operation);

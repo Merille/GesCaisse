@@ -173,6 +173,8 @@ namespace EasytransitCaisse.Controllers
 
             return View(model);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult SupprimerLigne(int id)
         {
             var ligne = _context.LignesFactures

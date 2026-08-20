@@ -4,6 +4,7 @@ using EasytransitCaisse.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasytransitCaisse.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260820102648_MultiTenant")]
+    partial class MultiTenant
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -271,9 +274,6 @@ namespace EasytransitCaisse.Migrations
                     b.Property<DateTime>("DateOperation")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("EstJustifie")
-                        .HasColumnType("bit");
-
                     b.Property<int>("JourneeCaisseId")
                         .HasColumnType("int");
 
@@ -287,13 +287,6 @@ namespace EasytransitCaisse.Migrations
                     b.Property<int?>("MotifId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Observation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StatutValidation")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("TenantId")
                         .HasColumnType("int");
 
@@ -303,9 +296,6 @@ namespace EasytransitCaisse.Migrations
 
                     b.Property<int>("UtilisateurId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Valideur")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -366,9 +356,6 @@ namespace EasytransitCaisse.Migrations
                     b.Property<string>("NomUtilisateur")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PeutValiderOperations")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Profil")
                         .IsRequired()

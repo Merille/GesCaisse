@@ -1,11 +1,18 @@
 ﻿using EasytransitCaisse.Data;
 using EasytransitCaisse.Models;
+using EasytransitCaisse.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace EasytransitCaisse.Controllers
 {
+    [AllowAnonymous]
     public class AuthController : Controller
     {
         private readonly AppDbContext _context;
@@ -30,14 +37,18 @@ namespace EasytransitCaisse.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
 
             var hash = HashPassword(model.Password);
 
+            // Le username est global (pas de filtre tenant ici : on ne connaît
+            // pas encore le tenant tant que l'utilisateur n'est pas identifié).
             var user = _context.Utilisateurs
+                .IgnoreQueryFilters()
+                .Include(u => u.Tenant)
                 .FirstOrDefault(u =>
                     u.NomUtilisateur == model.Username &&
                     u.MotPasse == hash);
@@ -48,16 +59,29 @@ namespace EasytransitCaisse.Controllers
                 return View();
             }
 
-            // SESSION
-            HttpContext.Session.SetString("User", user.NomUtilisateur);
-            HttpContext.Session.SetString("Profil", user.Profil);
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.NomUtilisateur),
+                new Claim(AppClaimTypes.Profil, user.Profil),
+                new Claim(AppClaimTypes.TenantId, (user.TenantId ?? 0).ToString()),
+                new Claim(AppClaimTypes.TenantName, user.Tenant?.Nom ?? ""),
+                new Claim(AppClaimTypes.NomComplet, user.NomComplet),
+                new Claim(AppClaimTypes.PeutValiderOperations, user.PeutValiderOperations.ToString()),
+            };
+
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(identity));
 
             return RedirectToAction("Index", "Dashboard");
         }
 
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            HttpContext.Session.Clear();
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login");
         }
     }

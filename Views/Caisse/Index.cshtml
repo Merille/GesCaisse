@@ -54,10 +54,13 @@
                                 Modifier
                             </a>
 
-                            <a href="/Caisse/Delete/@item.ID"
-                                   class="btn btn-danger btn-sm">
-                                Supprimer
-                            </a>
+                            <form asp-action="Delete" asp-route-id="@item.ID" method="post" class="d-inline"
+                                  onsubmit="return confirm('Supprimer cette caisse ?')">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    Supprimer
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 }

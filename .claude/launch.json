@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "easycaisse-http",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--no-launch-profile", "--urls", "http://localhost:5216"],
+      "port": 5216
+    }
+  ]
+}

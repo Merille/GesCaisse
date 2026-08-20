@@ -1,0 +1,43 @@
+@model EasytransitCaisse.Models.Tenant
+@{
+    ViewData["Title"] = "Sociétés";
+}
+<div class="container mt-4">
+
+    <div class="card shadow-lg">
+
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Créer une société</h4>
+        </div>
+
+        <div class="card-body">
+
+            <form method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Code</label>
+                        <input name="Code" class="form-control" placeholder="Ex: ACME" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Nom</label>
+                        <input name="Nom" class="form-control" placeholder="Ex: Acme SARL" />
+                    </div>
+
+                </div>
+
+                <div class="text-end">
+                    <button class="btn btn-success">
+                        Enregistrer
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>

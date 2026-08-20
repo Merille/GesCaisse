@@ -4,6 +4,7 @@ using EasytransitCaisse.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasytransitCaisse.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260805090620_Motifs")]
+    partial class Motifs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,9 +53,6 @@ namespace EasytransitCaisse.Migrations
 
                     b.Property<string>("StCode")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("int");
 
                     b.HasKey("ID");
 
@@ -95,9 +95,6 @@ namespace EasytransitCaisse.Migrations
 
                     b.Property<string>("TelephoneContact")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
@@ -144,9 +141,6 @@ namespace EasytransitCaisse.Migrations
                     b.Property<decimal>("TauxTVA")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("TenantId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
@@ -188,9 +182,6 @@ namespace EasytransitCaisse.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TenantId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CaisseId");
@@ -219,9 +210,6 @@ namespace EasytransitCaisse.Migrations
                     b.Property<decimal>("Quantite")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("TenantId")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("TotalLigne")
                         .HasColumnType("decimal(18,2)");
 
@@ -246,9 +234,6 @@ namespace EasytransitCaisse.Migrations
                     b.Property<string>("LibelleMotif")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TenantId")
-                        .HasColumnType("int");
-
                     b.Property<string>("TypeModif")
                         .HasColumnType("nvarchar(max)");
 
@@ -271,9 +256,6 @@ namespace EasytransitCaisse.Migrations
                     b.Property<DateTime>("DateOperation")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("EstJustifie")
-                        .HasColumnType("bit");
-
                     b.Property<int>("JourneeCaisseId")
                         .HasColumnType("int");
 
@@ -284,19 +266,6 @@ namespace EasytransitCaisse.Migrations
                     b.Property<decimal>("Montant")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("MotifId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Observation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StatutValidation")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("int");
-
                     b.Property<string>("TypeOperation")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -304,47 +273,15 @@ namespace EasytransitCaisse.Migrations
                     b.Property<int>("UtilisateurId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Valideur")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
 
                     b.HasIndex("JourneeCaisseId");
 
-                    b.HasIndex("MotifId");
-
                     b.HasIndex("UtilisateurId");
 
                     b.ToTable("OperationsCaisses");
-                });
-
-            modelBuilder.Entity("EasytransitCaisse.Models.Tenant", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Actif")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DateCreation")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Nom")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Tenants");
                 });
 
             modelBuilder.Entity("EasytransitCaisse.Models.Utilisateur", b =>
@@ -367,19 +304,11 @@ namespace EasytransitCaisse.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("PeutValiderOperations")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Profil")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("TenantId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("TenantId");
 
                     b.ToTable("Utilisateurs");
                 });
@@ -429,10 +358,6 @@ namespace EasytransitCaisse.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("EasytransitCaisse.Models.Motif", "Motif")
-                        .WithMany()
-                        .HasForeignKey("MotifId");
-
                     b.HasOne("EasytransitCaisse.Models.Utilisateur", "Utilisateur")
                         .WithMany()
                         .HasForeignKey("UtilisateurId")
@@ -443,18 +368,7 @@ namespace EasytransitCaisse.Migrations
 
                     b.Navigation("JourneeCaisse");
 
-                    b.Navigation("Motif");
-
                     b.Navigation("Utilisateur");
-                });
-
-            modelBuilder.Entity("EasytransitCaisse.Models.Utilisateur", b =>
-                {
-                    b.HasOne("EasytransitCaisse.Models.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId");
-
-                    b.Navigation("Tenant");
                 });
 #pragma warning restore 612, 618
         }

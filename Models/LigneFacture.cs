@@ -1,8 +1,12 @@
-﻿namespace EasytransitCaisse.Models
+﻿using EasytransitCaisse.Data;
+
+namespace EasytransitCaisse.Models
 {
-    public class LigneFacture
+    public class LigneFacture : ITenantScoped
     {
         public int Id { get; set; }
+
+        public int TenantId { get; set; }
 
         public int FactureId { get; set; }
 

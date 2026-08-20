@@ -16,8 +16,15 @@
        class="btn btn-primary">
         <i class="fa fa-eye"></i> Aperçu
     </a>
+    <a href="/Facture/Index">
+        <button class="btn bg-orange">
+            Liste des factures
+        </button>
+    </a>
+    
+    <br /><br />
     <div class="card shadow-lg">
-
+        
         <div class="card-header bg-primary text-white">
             Facture @Model.Numero
         </div>
@@ -113,7 +120,7 @@
 
     <div class="card shadow-lg mt-4">
 
-        <div class="card-header bg-dark text-white">
+        <div class="card-header bg-orange text-white">
             Lignes de facture
         </div>
 
@@ -141,14 +148,13 @@
                             <td>@ligne.PrixUnitaire.ToString("N0")</td>
                             <td>@ligne.TotalLigne.ToString("N0")</td>
                             <td>
-                                <a asp-action="SupprimerLigne"
-                                   asp-route-id="@ligne.Id"
-                                   class="btn btn-sm btn-danger"
-                                   onclick="return confirm('Voulez-vous supprimer cette ligne ?');">
-
-                                    <i class="fa fa-trash"></i>
-
-                                </a>
+                                <form asp-action="SupprimerLigne" asp-route-id="@ligne.Id" method="post" class="d-inline"
+                                      onsubmit="return confirm('Voulez-vous supprimer cette ligne ?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     }
@@ -160,7 +166,7 @@
         </div>
 
     </div>
-
+    <br />
     <form method="post"
           asp-action="ValiderFacture">
 
@@ -168,7 +174,7 @@
                name="factureId"
                value="@Model.Id" />
 
-        <button class="btn btn-primary">
+        <button style="color:#2f78ff;" class="btn bg-orange">
             Valider la facture
         </button>
 

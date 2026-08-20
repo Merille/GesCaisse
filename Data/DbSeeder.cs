@@ -1,4 +1,5 @@
-﻿using EasytransitCaisse.Models;
+using EasytransitCaisse.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -8,25 +9,43 @@ namespace EasytransitCaisse.Data
     {
         public static void Seed(AppDbContext context)
         {
-            if (!context.Utilisateurs.Any())
+            // SuperAdmin : portée globale (TenantId = 0), gère les tenants.
+            if (!context.Utilisateurs.IgnoreQueryFilters().Any(u => u.NomUtilisateur == "superadmin"))
             {
-                var admin = new Utilisateur
+                context.Utilisateurs.Add(new Utilisateur
                 {
-                    NomUtilisateur = "admin",
-                    NomComplet = "Administrateur",
-                    Profil = "Admin",
+                    NomUtilisateur = "superadmin",
+                    NomComplet = "Super Administrateur",
+                    Profil = "SuperAdmin",
+                    TenantId = null,
                     MotPasse = HashPassword("123")
-                };
-
-                context.Utilisateurs.Add(admin);
-
+                });
 
                 context.SaveChanges();
             }
 
-            if (!context.Caisses.Any())
+            if (!context.Tenants.Any())
             {
-                var caisse = new Caisse
+                var tenant = new Tenant
+                {
+                    Nom = "Société de démonstration",
+                    Code = "DEMO",
+                    Actif = true
+                };
+
+                context.Tenants.Add(tenant);
+                context.SaveChanges();
+
+                context.Utilisateurs.Add(new Utilisateur
+                {
+                    NomUtilisateur = "admin",
+                    NomComplet = "Administrateur",
+                    Profil = "Admin",
+                    TenantId = tenant.Id,
+                    MotPasse = HashPassword("123")
+                });
+
+                context.Caisses.Add(new Caisse
                 {
                     ChkCode = "CASH1",
                     ChkDescription = "Caisse principale",
@@ -34,12 +53,12 @@ namespace EasytransitCaisse.Data
                     SalesPersonDefault = 1,
                     CashierDefault = 1,
                     CustomerDefaultCode = "CUST001",
-                    JournalDefaultCode = "JRN01"
-                };
-                context.Caisses.Add(caisse);
+                    JournalDefaultCode = "JRN01",
+                    TenantId = tenant.Id
+                });
+
                 context.SaveChanges();
             }
-
         }
 
         private static string HashPassword(string password)

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using EasytransitCaisse.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EasytransitCaisse.Controllers
@@ -8,11 +9,6 @@ namespace EasytransitCaisse.Controllers
     {
         public IActionResult Index()
         {
-            if (HttpContext.Session.GetString("User") == null)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             return View();
         }
 
@@ -21,6 +17,7 @@ namespace EasytransitCaisse.Controllers
             return View();
         }
 
+        [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

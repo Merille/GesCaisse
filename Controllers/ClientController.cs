@@ -30,7 +30,8 @@ namespace EasytransitCaisse.Controllers
                     c.CodeClient.Contains(search) ||
                     c.NomSociete.Contains(search) ||
                     c.NomContact.Contains(search) ||
-                    c.Telephone.Contains(search));
+                    c.Telephone.Contains(search) ||
+                    c.Type.Contains(search));
             }
 
             var clients = await query
@@ -92,7 +93,7 @@ namespace EasytransitCaisse.Controllers
             client.Telephone = model.Telephone;
 
             client.Email = model.Email ?? ""; // 🔥 évite NULL
-
+            client.Type = model.Type;
             client.NomContact = model.NomContact;
             client.FonctionContact = model.FonctionContact;
             client.TelephoneContact = model.TelephoneContact;
@@ -104,6 +105,8 @@ namespace EasytransitCaisse.Controllers
         }
 
         // DELETE
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
             var client = _context.Clients.Find(id);
@@ -132,6 +135,7 @@ namespace EasytransitCaisse.Controllers
                     c.EmailContact.Contains(search) ||
                     c.Adresse.Contains(search) ||
                     c.Email.Contains(search) ||
+                    c.Type.Contains(search) ||
                     c.FonctionContact.Contains(search) ||
                     c.TelephoneContact.Contains(search));
             }
@@ -149,8 +153,9 @@ namespace EasytransitCaisse.Controllers
             sheet.Cell(1, 5).Value = "EmailContact";
             sheet.Cell(1, 6).Value = "Adresse";
             sheet.Cell(1, 7).Value = "Email";
-            sheet.Cell(1, 8).Value = "FonctionContact";
-            sheet.Cell(1, 9).Value = "TelephoneContact";
+            sheet.Cell(1, 8).Value = "Type";
+            sheet.Cell(1, 9).Value = "FonctionContact";
+            sheet.Cell(1, 10).Value = "TelephoneContact";
 
             // Style en-têtes
             var headerRow = sheet.Range("A1:D1");
@@ -169,8 +174,9 @@ namespace EasytransitCaisse.Controllers
                 sheet.Cell(i + 2, 5).Value = c.EmailContact;
                 sheet.Cell(i + 2, 6).Value = c.Adresse;
                 sheet.Cell(i + 2, 7).Value = c.Email;
-                sheet.Cell(i + 2, 8).Value = c.FonctionContact;
-                sheet.Cell(i + 2, 9).Value = c.TelephoneContact;
+                sheet.Cell(i + 2, 8).Value = c.Type;
+                sheet.Cell(i + 2, 9).Value = c.FonctionContact;
+                sheet.Cell(i + 2, 10).Value = c.TelephoneContact;
             }
 
             // Ajuster largeur des colonnes automatiquement
@@ -231,8 +237,9 @@ namespace EasytransitCaisse.Controllers
                         EmailContact = row.Cell(5).GetString() ?? "",
                         Adresse = row.Cell(6).GetString() ?? "",
                         Email = row.Cell(7).GetString() ?? "",
-                        FonctionContact = row.Cell(8).GetString() ?? "",
-                        TelephoneContact = row.Cell(9).GetString() ?? "",
+                        Type = row.Cell(8).GetString() ?? "",
+                        FonctionContact = row.Cell(9).GetString() ?? "",
+                        TelephoneContact = row.Cell(10).GetString() ?? "",
                     };
 
                     // Validation basique

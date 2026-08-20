@@ -1,6 +1,8 @@
-﻿namespace EasytransitCaisse.Models
+﻿using EasytransitCaisse.Data;
+
+namespace EasytransitCaisse.Models
 {
-    public class Caisse
+    public class Caisse : ITenantScoped
     {
         public int ID { get; set; } // Identity
 
@@ -16,5 +18,7 @@
         public string? CustomerDefaultCode { get; set; } = "C0001";
 
         public string? JournalDefaultCode { get; set; }= "J0001";
+
+        public int TenantId { get; set; }
     }
 }

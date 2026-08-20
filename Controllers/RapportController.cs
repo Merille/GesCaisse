@@ -28,7 +28,9 @@ namespace EasytransitCaisse.Controllers
         [HttpGet]
         public IActionResult GetOperations(DateTime? dateDebut, DateTime? dateFin, string type, int? caisseId)
         {
-            var query = _context.OperationsCaisses.AsQueryable();
+            var query = _context.OperationsCaisses
+                .Include(x => x.JourneeCaisse)
+                .AsQueryable();
 
             if (dateDebut != null)
                 query = query.Where(x => x.DateOperation >= dateDebut);
@@ -40,7 +42,7 @@ namespace EasytransitCaisse.Controllers
                 query = query.Where(x => x.TypeOperation == type);
 
             if (caisseId != null)
-                query = query.Where(x => x.Id == caisseId);
+                query = query.Where(x => x.JourneeCaisse.CaisseId == caisseId);
 
             var data = query.Select(x => new
             {

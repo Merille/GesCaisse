@@ -14,15 +14,22 @@
                 <h4>
                     @Model.ChkCode - @Model.ChkDescription
                 </h4>
+            </div>
+            <div class="d-flex justify-content-end gap-2">
                 <a href="/JourneeCaisse/PrintJournees?caisseId=@Model.ID"
-                       class="btn btn-dark">
+                   class="btn btn-dark">
                     Imprimer PDF
                 </a>
-                <a href="/JourneeCaisse/Create/@Model.ID"
-                       class="btn btn-success">
-                    Nouvelle journée
+
+                <a href="/Caisse/Index"
+                   class="btn btn-secondary">
+                    Retour
                 </a>
 
+                <a href="/JourneeCaisse/Create/@Model.ID"
+                   class="btn btn-success">
+                    Nouvelle journée
+                </a>
             </div>
 
         </div>

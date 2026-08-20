@@ -1,8 +1,12 @@
-﻿namespace EasytransitCaisse.Models
+﻿using EasytransitCaisse.Data;
+
+namespace EasytransitCaisse.Models
 {
-    public class Client
+    public class Client : ITenantScoped
     {
         public int Id { get; set; }
+
+        public int TenantId { get; set; }
 
         // Société
         public string CodeClient { get; set; }
@@ -10,6 +14,7 @@
         public string? Adresse { get; set; }
         public string? Telephone { get; set; }
         public string? Email { get; set; }
+        public string? Type { get; set; }
 
         // Interlocuteur principal
         public string? NomContact { get; set; }
